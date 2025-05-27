@@ -1,0 +1,23 @@
+
+server:
+  port: 8081
+  error:
+    include-message: always
+#Configuracion de spring
+spring:
+  #Configuracion de migracion
+  flyway:
+    enabled: true
+    baselineVersion: 1
+    locations:
+      classpath: db/migration
+    sqlMigrationSuffixes: .sql
+    baselineOnMigrate: true
+    sqlMigrationPrefix: V
+    schemas: public
+
+  datasource:
+    url: jdbc:postgresql://dpg-d0l7s1vfte5s739971b0-a.oregon-postgres.render.com:5432/app_ywrf
+    username: marco
+    password: OWeGlNOl5fHvWrNWa7sTEJi5jzMeberb
+    driverClassName: org.postgresql.Driver
