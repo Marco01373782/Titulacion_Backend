@@ -1,0 +1,29 @@
+package titulacion.backend.model
+
+import jakarta.persistence.*
+import java.time.LocalDateTime
+
+@Entity
+@Table(name = "session_activity_result")
+data class SessionActivityResult(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+
+    @ManyToOne
+    @JoinColumn(name = "sesion_id", nullable = false)
+    val sesion: Sesion,
+
+    @ManyToOne
+    @JoinColumn(name = "activity_id", nullable = false)
+    val activity: Activity,
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    val user: User,
+
+    val result: String? = null,
+
+    @Column(name = "completed_at")
+    val completedAt: LocalDateTime = LocalDateTime.now()
+)
