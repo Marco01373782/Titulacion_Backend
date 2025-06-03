@@ -1,6 +1,7 @@
 package titulacion.backend.model
 
 import jakarta.persistence.*
+import titulacion.backend.enums.Parentesco
 import java.time.LocalDateTime
 
 @Entity
@@ -26,9 +27,10 @@ class User {
 
     var roles: String? = "user"
 
-    @ManyToOne
-    @JoinColumn(name = "parentesco_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "parentesco")
     var parentesco: Parentesco? = null
+
 
     @Column(name = "created_at")
     var createdAt: LocalDateTime? = LocalDateTime.now()

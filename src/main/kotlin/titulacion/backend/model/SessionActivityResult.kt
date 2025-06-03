@@ -25,5 +25,8 @@ data class SessionActivityResult(
     val result: String? = null,
 
     @Column(name = "completed_at")
-    val completedAt: LocalDateTime = LocalDateTime.now()
+    val completedAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "duration_seconds")
+    val durationSeconds: Int? = null
 )

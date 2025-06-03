@@ -5,16 +5,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import titulacion.backend.model.User
 import titulacion.backend.repository.UserRepository
-import titulacion.backend.repository.ParentescoRepository
 
 @Service
 class UserService {
 
     @Autowired
     lateinit var userRepository: UserRepository
-
-    @Autowired
-    lateinit var parentescoRepository: ParentescoRepository
 
     // Obtener todos los usuarios
     fun list(): List<User> {
@@ -39,33 +35,25 @@ class UserService {
     }
 
     fun create(user: User): User {
-        // Validar que el correo no esté en uso
         if (!validateEmail(user.email!!)) {
             throw IllegalArgumentException("Email ya está registrado")
         }
 
-        // Validar la fuerza de la contraseña
         if (!validatePassword(user.password!!)) {
             throw IllegalArgumentException("La contraseña no cumple con los requisitos de seguridad")
         }
 
-        // Si el usuario tiene un parentesco_id, buscar el objeto completo en la DB
-        user.parentesco?.id?.let { parentescoId ->
-            val parentesco = parentescoRepository.findById(parentescoId).orElse(null)
-            user.parentesco = parentesco
-        }
-
-        // Si el rol es nulo o vacío, asignar "user" por defecto
+        // Ya no se busca el parentesco desde DB, simplemente se usa como enum directo
         if (user.roles.isNullOrBlank()) {
             user.roles = "user"
         }
 
-        // Encriptar la contraseña antes de guardar
         val encoder = BCryptPasswordEncoder()
         user.password = encoder.encode(user.password)
 
         return userRepository.save(user)
     }
+
 
     // Actualizar un usuario existente
     fun update(id: Long, user: User): User? {

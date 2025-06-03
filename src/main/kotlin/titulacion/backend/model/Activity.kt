@@ -1,6 +1,8 @@
 package titulacion.backend.model
 
 import jakarta.persistence.*
+import titulacion.backend.enums.ActivityType
+import titulacion.backend.enums.Difficulty
 
 @Entity
 @Table(name = "activity")
@@ -12,12 +14,12 @@ class Activity {
     var title: String? = null
     var description: String? = null
 
-    @ManyToOne
-    @JoinColumn(name = "type_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
     var type: ActivityType? = null
 
-    @ManyToOne
-    @JoinColumn(name = "difficulty_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "difficulty", nullable = false)
     var difficulty: Difficulty? = null
 
     @Column(name = "resource_url")

@@ -1,6 +1,7 @@
 package titulacion.backend.model
 
 import jakarta.persistence.*
+import titulacion.backend.enums.Gender
 
 @Entity
 @Table(name = "patient")
@@ -17,8 +18,8 @@ class Patient {
     @Column(name = "photo_url")
     var photoUrl: String? = null
 
-    @ManyToOne
-    @JoinColumn(name = "gender_id")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
     var gender: Gender? = null
 
     @ManyToOne

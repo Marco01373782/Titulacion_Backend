@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import titulacion.backend.dto.PatientDTO
 import titulacion.backend.model.Patient
-import titulacion.backend.repository.GenderRepository
 import titulacion.backend.repository.PatientRepository
 import titulacion.backend.repository.UserRepository
 
@@ -13,9 +12,6 @@ class PatientService {
 
     @Autowired
     lateinit var patientRepository: PatientRepository
-
-    @Autowired
-    lateinit var genderRepository: GenderRepository
 
     @Autowired
     lateinit var userRepository: UserRepository
@@ -29,14 +25,10 @@ class PatientService {
     }
 
     fun create(dto: PatientDTO): Patient {
-        // Validar que el usuario no tenga ya un paciente
         val existingPatient = patientRepository.findByUserId(dto.userId)
         if (existingPatient != null) {
             throw IllegalStateException("Este usuario ya tiene un paciente registrado.")
         }
-
-        val gender = genderRepository.findById(dto.genderId)
-            .orElseThrow { IllegalArgumentException("Género no encontrado") }
 
         val user = userRepository.findById(dto.userId)
             .orElseThrow { IllegalArgumentException("Usuario no encontrado") }
@@ -47,12 +39,13 @@ class PatientService {
             surname = dto.surname
             age = dto.age
             photoUrl = dto.photoUrl
-            this.gender = gender
+            gender = dto.gender
             this.user = user
         }
 
         return patientRepository.save(patient)
     }
+
 
     fun delete(id: Long) {
         if (patientRepository.existsById(id)) {

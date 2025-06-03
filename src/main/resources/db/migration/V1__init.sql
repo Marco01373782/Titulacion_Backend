@@ -1,25 +1,5 @@
 
-CREATE TABLE IF NOT EXISTS parentesco (
-    id SERIAL PRIMARY KEY,
-    name_parentesco VARCHAR(100) NOT NULL
-    );
-
-CREATE TABLE IF NOT EXISTS gender (
-     id SERIAL PRIMARY KEY,
-     name_gender VARCHAR(50) NOT NULL
-    );
-
-CREATE TABLE IF NOT EXISTS difficulty (
-    id SERIAL PRIMARY KEY,
-    name_difficulty VARCHAR(50) NOT NULL
-    );
-
-CREATE TABLE IF NOT EXISTS activity_type (
-    id SERIAL PRIMARY KEY,
-    name_type VARCHAR(100) NOT NULL
-    );
-
-
+-- Usuarios y pacientes
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -27,12 +7,10 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     roles VARCHAR(50) DEFAULT 'user',
-    parentesco_id INTEGER,
+    parentesco VARCHAR(50),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (parentesco_id) REFERENCES parentesco(id)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-
 
 CREATE TABLE IF NOT EXISTS patient (
     id SERIAL PRIMARY KEY,
@@ -40,39 +18,34 @@ CREATE TABLE IF NOT EXISTS patient (
     secondname VARCHAR(100),
     surname VARCHAR(100) NOT NULL,
     age INTEGER CHECK (age >= 0),
-    photo_url TEXT,
-    gender_id INTEGER,
-    users_id INTEGER,
-    FOREIGN KEY (gender_id) REFERENCES gender(id),
-    FOREIGN KEY (users_id) REFERENCES users(id)
+    gender VARCHAR(50),
+    photo_url VARCHAR(250),
+    users_id INTEGER
     );
 
-
-CREATE TABLE IF NOT EXISTS sesion (
-    id SERIAL PRIMARY KEY,
-    patient_id INTEGER NOT NULL,
-    title VARCHAR(150) NOT NULL,
-    date DATE NOT NULL,
-    difficulty_id INTEGER NOT NULL,
-    result TEXT,
-    mode VARCHAR(50),
-    description TEXT,
-    FOREIGN KEY (patient_id) REFERENCES patient(id) ON DELETE CASCADE,
-    FOREIGN KEY (difficulty_id) REFERENCES difficulty(id)
-    );
-
-
+-- Actividades y sesiones
 CREATE TABLE IF NOT EXISTS activity (
     id SERIAL PRIMARY KEY,
     title VARCHAR(150) NOT NULL,
     description TEXT,
-    type_id INTEGER,
-    difficulty_id INTEGER,
-    resource_url TEXT,
-    FOREIGN KEY (type_id) REFERENCES activity_type(id),
-    FOREIGN KEY (difficulty_id) REFERENCES difficulty(id)
+    type VARCHAR(50) NOT NULL,
+    difficulty VARCHAR(50) NOT NULL,
+    resource_url VARCHAR(250)
     );
 
+CREATE TABLE IF NOT EXISTS sesion (
+    id SERIAL PRIMARY KEY,
+    patient_id INTEGER,
+    title VARCHAR(150) NOT NULL,
+    date DATE,
+    difficulty VARCHAR(50) NOT NULL,
+    result TEXT,
+    mode VARCHAR(50),
+    description TEXT,
+    session_duration_seconds INTEGER,
+    started_at TIMESTAMP,
+    ended_at TIMESTAMP
+    );
 
 CREATE TABLE IF NOT EXISTS session_activity (
     sesion_id INTEGER,
@@ -80,4 +53,18 @@ CREATE TABLE IF NOT EXISTS session_activity (
     PRIMARY KEY (sesion_id, activity_id),
     FOREIGN KEY (sesion_id) REFERENCES sesion(id) ON DELETE CASCADE,
     FOREIGN KEY (activity_id) REFERENCES activity(id) ON DELETE CASCADE
+    );
+
+-- Resultados por actividad en la sesión
+CREATE TABLE IF NOT EXISTS session_activity_result (
+     id SERIAL PRIMARY KEY,
+     sesion_id INTEGER NOT NULL,
+     activity_id INTEGER NOT NULL,
+     user_id INTEGER NOT NULL,
+     result TEXT,
+     completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     duration_seconds INTEGER, -- tiempo que tardó en realizar la actividad
+     FOREIGN KEY (sesion_id) REFERENCES sesion(id) ON DELETE CASCADE,
+    FOREIGN KEY (activity_id) REFERENCES activity(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );

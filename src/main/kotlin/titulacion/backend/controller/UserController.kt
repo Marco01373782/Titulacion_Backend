@@ -60,7 +60,8 @@ class UserController {
                 mapOf(
                     "token" to token,
                     "email" to user.email!!,
-                    "roles" to user.roles!!
+                    "roles" to user.roles!!,
+                    "id" to user.id
                 )
             )
 // Devolver el token al cliente
