@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS patient (
     age INTEGER CHECK (age >= 0),
     gender VARCHAR(50),
     photo_url VARCHAR(250),
-    users_id INTEGER
+    user_id INTEGER,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
 
 -- Actividades y sesiones
@@ -30,22 +31,19 @@ CREATE TABLE IF NOT EXISTS activity (
     description TEXT,
     type VARCHAR(50) NOT NULL,
     difficulty VARCHAR(50) NOT NULL,
-    resource_url VARCHAR(250)
+    resource_url VARCHAR(250),
+    max_score DECIMAL(4, 2) NOT NULL DEFAULT 10
     );
 
 CREATE TABLE IF NOT EXISTS sesion (
     id SERIAL PRIMARY KEY,
     patient_id INTEGER,
     title VARCHAR(150) NOT NULL,
-    date DATE,
     difficulty VARCHAR(50) NOT NULL,
-    result TEXT,
-    mode VARCHAR(50),
     description TEXT,
-    session_duration_seconds INTEGER,
-    started_at TIMESTAMP,
-    ended_at TIMESTAMP
+    FOREIGN KEY (patient_id) REFERENCES patient(id) ON DELETE CASCADE
     );
+
 
 CREATE TABLE IF NOT EXISTS session_activity (
     sesion_id INTEGER,
@@ -61,10 +59,27 @@ CREATE TABLE IF NOT EXISTS session_activity_result (
      sesion_id INTEGER NOT NULL,
      activity_id INTEGER NOT NULL,
      user_id INTEGER NOT NULL,
-     result TEXT,
+     result DECIMAL(4,2),
      completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
      duration_seconds INTEGER, -- tiempo que tardó en realizar la actividad
      FOREIGN KEY (sesion_id) REFERENCES sesion(id) ON DELETE CASCADE,
     FOREIGN KEY (activity_id) REFERENCES activity(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
+CREATE TABLE IF NOT EXISTS sesion_usuario (
+    id SERIAL PRIMARY KEY,
+    sesion_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'BLOQUEADA',
+    started_at TIMESTAMP,
+    ended_at TIMESTAMP,
+    session_duration_seconds INTEGER,
+    result DECIMAL(4,2),
+    mode VARCHAR(50),
+    date DATE,
+    UNIQUE(sesion_id, user_id),
+    FOREIGN KEY (sesion_id) REFERENCES sesion(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+

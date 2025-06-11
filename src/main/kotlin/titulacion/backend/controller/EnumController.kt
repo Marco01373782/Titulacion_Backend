@@ -7,6 +7,7 @@ import titulacion.backend.enums.ActivityType
 import titulacion.backend.enums.Difficulty
 import titulacion.backend.enums.Gender
 import titulacion.backend.enums.Parentesco
+import titulacion.backend.enums.StatusSesion
 
 @RestController
 @RequestMapping("/enums")
@@ -29,4 +30,9 @@ class EnumController {
     fun getParentesco(): List<String> {
         return Parentesco.values().map { it.name }
     }
+    @GetMapping("/status-sesion")
+    fun getStatusSesion(): List<String> {
+        return StatusSesion.values().map { it.name }
+    }
+
 }

@@ -7,6 +7,6 @@ import titulacion.backend.model.User
 
 @Repository
 interface UserRepository : JpaRepository<User, Long> {
-
+    fun findByRoles(roles: String): List<User>
     fun findByEmail(email: String): User?
 }

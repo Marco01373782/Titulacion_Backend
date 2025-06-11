@@ -3,6 +3,7 @@ package titulacion.backend.model
 import jakarta.persistence.*
 import titulacion.backend.enums.ActivityType
 import titulacion.backend.enums.Difficulty
+import java.math.BigDecimal
 
 @Entity
 @Table(name = "activity")
@@ -24,4 +25,8 @@ class Activity {
 
     @Column(name = "resource_url")
     var resourceUrl: String? = null
+
+    @Column(name = "max_score", nullable = false)
+    var maxScore: BigDecimal = BigDecimal(10)
+
 }

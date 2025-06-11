@@ -23,6 +23,6 @@ class Patient {
     var gender: Gender? = null
 
     @ManyToOne
-    @JoinColumn(name = "users_id")
+    @JoinColumn(name = "user_id")
     var user: User? = null
 }

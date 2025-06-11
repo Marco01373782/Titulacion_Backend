@@ -1,6 +1,7 @@
 package titulacion.backend.model
 
 import jakarta.persistence.*
+import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
@@ -22,7 +23,9 @@ data class SessionActivityResult(
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
-    val result: String? = null,
+    @Column(precision = 4, scale = 2)
+    val result: BigDecimal? = null,
+
 
     @Column(name = "completed_at")
     val completedAt: LocalDateTime = LocalDateTime.now(),
