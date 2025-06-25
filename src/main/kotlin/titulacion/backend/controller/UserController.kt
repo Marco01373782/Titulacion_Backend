@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import titulacion.backend.model.User
 import titulacion.backend.security.JwtUtil
+import titulacion.backend.service.SesionUsuarioService
 import titulacion.backend.service.UserService
 
 @RestController
@@ -16,6 +17,9 @@ class UserController {
 
     @Autowired
     lateinit var jwtUtil: JwtUtil // Inyectamos JwtUtil
+    @Autowired
+    lateinit var sesionUsuarioService: SesionUsuarioService
+
 
     @GetMapping
     fun list(): List<User> {
@@ -31,11 +35,16 @@ class UserController {
     fun create(@RequestBody user: User): ResponseEntity<Any> {
         return try {
             val createdUser = userService.create(user)
+
+            // 🔁 Asignar sesiones después de crear usuario
+            sesionUsuarioService.assignAllExistingSessionsToUser(createdUser.id!!)
+
             ResponseEntity.ok(createdUser)
         } catch (e: IllegalArgumentException) {
             ResponseEntity.badRequest().body(e.message)
         }
     }
+
 
     @PostMapping("/login")
     fun login(@RequestBody loginData: Map<String, String>): ResponseEntity<Any> {

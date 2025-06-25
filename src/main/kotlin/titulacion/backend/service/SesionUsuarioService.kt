@@ -6,6 +6,7 @@ import titulacion.backend.dto.SesionUsuarioDTO
 import titulacion.backend.enums.StatusSesion
 import titulacion.backend.model.Sesion
 import titulacion.backend.model.SesionUsuario
+import titulacion.backend.repository.SesionRepository
 import titulacion.backend.repository.SesionUsuarioRepository
 import titulacion.backend.repository.UserRepository
 
@@ -17,6 +18,9 @@ class SesionUsuarioService {
 
     @Autowired
     lateinit var userRepository: UserRepository
+    @Autowired
+    lateinit var sesionRepository: SesionRepository
+
 
     // Método para asignar una sesión a todos los usuarios
     fun assignSessionToAllUsers(sesion: Sesion) {
@@ -73,5 +77,25 @@ class SesionUsuarioService {
 
     fun findAllByUser(userId: Long): List<SesionUsuario> =
         sesionUsuarioRepository.findAllByUserId(userId)
+
+
+    fun assignAllExistingSessionsToUser(userId: Long) {
+        val user = userRepository.findById(userId).orElseThrow { RuntimeException("Usuario no encontrado") }
+
+        val sesiones = sesionRepository.findAll()  // ¡Usamos el SesionRepository!
+
+        sesiones.forEach { sesion ->
+            val yaExiste = sesionUsuarioRepository.findBySesionIdAndUserId(sesion.id!!, user.id!!)
+            if (yaExiste == null) {
+                val sesionUsuario = SesionUsuario().apply {
+                    this.sesion = sesion
+                    this.user = user
+                    this.status = StatusSesion.ACTIVA
+                }
+                sesionUsuarioRepository.save(sesionUsuario)
+            }
+        }
+    }
+
 
 }

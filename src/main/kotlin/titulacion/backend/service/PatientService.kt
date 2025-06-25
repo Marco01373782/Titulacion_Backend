@@ -20,17 +20,16 @@ class PatientService {
         return patientRepository.findAll()
     }
 
-    fun getById(id: Long): Patient? {
-        return patientRepository.findById(id).orElse(null)
-    }
 
     fun create(dto: PatientDTO): Patient {
-        val existingPatient = patientRepository.findByUserId(dto.userId)
+        val userId = dto.userId ?: throw IllegalArgumentException("El userId no puede ser null.")
+
+        val existingPatient = patientRepository.findByUserId(userId)
         if (existingPatient != null) {
             throw IllegalStateException("Este usuario ya tiene un paciente registrado.")
         }
 
-        val user = userRepository.findById(dto.userId)
+        val user = userRepository.findById(userId)
             .orElseThrow { IllegalArgumentException("Usuario no encontrado") }
 
         val patient = Patient().apply {
@@ -52,4 +51,41 @@ class PatientService {
             patientRepository.deleteById(id)
         }
     }
+    fun getPatientDTOByUserId(userId: Long): PatientDTO {
+        require(userId > 0) { "El ID de usuario debe ser mayor a cero." }
+
+        val patient = patientRepository.findByUserId(userId)
+            ?: throw IllegalArgumentException("No se encontró un paciente con el userId: $userId")
+
+        return PatientDTO(
+            firstname = patient.firstname,
+            secondname = patient.secondname,
+            surname = patient.surname,
+            age = patient.age,
+            photoUrl = patient.photoUrl,
+            gender = patient.gender,
+            userId = patient.user?.id ?: throw IllegalStateException("El paciente no tiene usuario asignado")
+        )
+
+    }
+
+    fun update(id: Long, dto: PatientDTO): Patient {
+        val patient = patientRepository.findById(id).orElseThrow { IllegalArgumentException("Paciente no encontrado") }
+        patient.firstname = dto.firstname
+        patient.secondname = dto.secondname
+        patient.surname = dto.surname
+        patient.age = dto.age
+        patient.gender = dto.gender
+        patient.photoUrl = dto.photoUrl
+        return patientRepository.save(patient)
+    }
+
+
+    fun getFullPatientByUserId(userId: Long): Patient {
+        require(userId > 0) { "El ID de usuario debe ser mayor a cero." }
+
+        return patientRepository.findByUserId(userId)
+            ?: throw IllegalArgumentException("No se encontró un paciente con el userId: $userId")
+    }
+
 }
