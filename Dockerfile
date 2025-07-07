@@ -1,14 +1,12 @@
-# Usa imagen oficial de OpenJDK para Kotlin/Spring Boot
-FROM openjdk:17-jdk-slim
-
-# Ruta dentro del contenedor
+# Etapa 1: Construcción del jar con Maven
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copia el jar generado en tu proyecto (ajusta el nombre y ruta correctos)
-COPY target/backend-0.0.1-SNAPSHOT.jar app.jar
-
-# Expone el puerto que usas (ejemplo 8081)
+# Etapa 2: Imagen final ligera con el jar
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8081
-
-# Comando para arrancar tu app
 ENTRYPOINT ["java", "-jar", "app.jar"]
