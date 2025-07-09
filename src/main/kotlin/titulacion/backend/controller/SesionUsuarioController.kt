@@ -61,7 +61,7 @@ class SesionUsuarioController {
     fun updateSesionUsuario(@PathVariable id: Long, @RequestBody updated: SesionUsuario): SesionUsuario {
         val existing = sesionUsuarioService.getById(id)
             ?: throw RuntimeException("No existe SesionUsuario con id $id")
-        existing.status = updated.status  // ¡Actualiza el estado!
+        existing.status = updated.status
         existing.startedAt = updated.startedAt
         existing.endedAt = updated.endedAt
         existing.sessionDurationSeconds = updated.sessionDurationSeconds

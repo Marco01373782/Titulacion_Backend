@@ -22,20 +22,19 @@ class SessionActivityService {
     fun assignActivitiesToSession(sesion: Sesion) {
         val sessionDifficulty = sesion.difficulty ?: throw Exception("Sesión sin dificultad")
 
-        // Obtener actividades de la misma dificultad
+        // Traemos actividades por dificultad y con tipo asignado
         val allByDifficulty = activityRepository.findAll()
-            .filter { it.difficulty == sessionDifficulty }
+            .filter { it.difficulty == sessionDifficulty && it.type != null }
 
-        // Validar que todas tengan un tipo
-        val withNullTypes = allByDifficulty.filter { it.type == null }
-        if (withNullTypes.isNotEmpty()) {
-            throw Exception("Hay actividades con dificultad $sessionDifficulty que no tienen tipo asignado")
-        }
-
+        // Agrupamos por tipo
         val groupedByType = allByDifficulty.groupBy { it.type!! }
 
-        val selectedActivities = groupedByType.values.mapNotNull { it.shuffled().firstOrNull() }
+        // Por cada tipo, escogemos 1 actividad al azar
+        val selectedActivities = groupedByType.values.mapNotNull { activitiesOfType ->
+            activitiesOfType.shuffled().firstOrNull()
+        }
 
+        // Creamos la lista para asignar a la sesión
         val sessionActivities = selectedActivities.map { activity ->
             SessionActivity().apply {
                 this.sesion = sesion
@@ -43,6 +42,7 @@ class SessionActivityService {
             }
         }
 
+        // Guardamos asignaciones
         sessionActivityRepository.saveAll(sessionActivities)
     }
 
